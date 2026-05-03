@@ -75,42 +75,16 @@ def atLeastOne(f,startNumber,endNumber): #je passe le fd au lieu du path car ça
         cpt+=1
     fout.write("0\n")
     
-def atMostOne(f,startNumber,endNumber):
-    cpt = startNumber
-    while(cpt < endNumber):
-        f.write(f"-{cpt} ")
-        cpt+=1
-    fout.write("0\n")
     
-def atLeastOne_col(f,varNum,maxNum,step): #maxNum = i*j*nbLettres, step = i*j
-    cpt = varNum
-    while(cpt < maxNum):
-        f.write(f"{cpt} ")
-        cpt+=step
-    fout.write("0\n")
+def atMostOne(f,x,y):
+    f.write(f"-{x} -{y} 0\n")
+
+def atMostOne_range(f, startNumber, endNumber):
+    for i in range(startNumber, endNumber):
+        for j in range(i + 1, endNumber):
+            atMostOne(f,i,j)
     
-def atMostOne_col(f,varNum,maxNum,step): #maxNum = i*j*nbLettres
-    cpt = varNum
-    while(cpt < maxNum):
-        f.write(f"-{cpt} ")
-        cpt+=step
-    fout.write("0\n")
-    
-    ### c'est le mm code voir une refacto plz
-    # hasardeux, il me manque que les contraintes sur les lignes et colonnes de ne pas avoir la meme lettre 2x sur une ligne bref c'est un atMost + atLeast sur tout mais faut arriver a chopper le bon pas et la ça fait trop longtemps jsuis dessus
-def atLeastOne_row(f,varNum,maxNum,step): #maxNum = i*j*nbLettres
-    cpt = varNum
-    while(cpt < maxNum):
-        f.write(f"{cpt} ")
-        cpt+=step
-    fout.write("0\n")
-    
-def atMostOne_row(f,varNum,maxNum,step): #maxNum = i*j*nbLettres
-    cpt = varNum
-    while(cpt < maxNum):
-        f.write(f"-{cpt} ")
-        cpt+=step
-    fout.write("0\n")
+
 
 # -------------- Main -----------------
 
@@ -143,25 +117,37 @@ with open(f"Puzzles/{filename}.json") as fin:
                 for lettre in lettres_utilisees:
                     if(check_letter(headers,i,j,lettre)!='.'):
                         fout.write(f"{variableCount} 0\n")
-                    
-                    if(firstPass):
-                        atLeastOne_col(fout,variableCount,largeur*nbLettres,nbLettres)
-                        atMostOne_col(fout,variableCount,largeur*nbLettres,nbLettres)
-                        atLeastOne_row(fout,variableCount,hauteur*largeur*nbLettres,nbLettres)
-                        atMostOne_row(fout,variableCount,hauteur*largeur*nbLettres,nbLettres)
-                        
                     variableCount+=1
                 count_after = variableCount
                 
                 #peut pas avoir 2 lettres différentes sur une case
                 atLeastOne(fout,count_before,count_after) #il manque le fait de preciser que chaque ligne et colonne peut avoir que 1 de chaque
-                atMostOne(fout,count_before,count_after)
-            firstPass = False
+                atMostOne_range(fout,count_before,count_after)
             print("")
-           
+        
+        
+        #boucles des contraintes de bases sur lignes et colonnes
+        
+        for i in range(hauteur): #on se positionne a une ligne
+            for lk in range(nbLettres): # on prend une lettre
+                for ja in range(largeur): # on se positionne a une case
+                    for jb in range(ja + 1, largeur): # on l'interdit d'avoir la meme lettre que toutes les cases d'après sur la ligne via des at most one
+                        x = 1 + i*largeur*nbLettres + ja*nbLettres + lk
+                        y = 1 + i*largeur*nbLettres + jb*nbLettres + lk
+                        atMostOne(fout,x,y)
+        
+        
+        
+        for j in range(largeur): #positionne a une colonne
+            for lk in range(nbLettres): #on prend une lettre
+                for ia in range(hauteur): #on se met a une case
+                    for ib in range(ia + 1, hauteur): #on l'interdit d'avoir la meme lettre que toutes les cases d'après sur la colonne
+                        x = 1 + ia*largeur*nbLettres + j*nbLettres + lk
+                        y = 1 + ib*largeur*nbLettres + j*nbLettres + lk
+                        atMostOne(fout,x,y)
             
 
-"""
+
 res = CNF(from_file=f"DIMACS/{filename}.cnf")
 solver = Glucose3(bootstrap_with=res)
             
@@ -170,7 +156,6 @@ if solver.solve():
 else:
     print("UNSAT")
     
-"""
       
             
             
