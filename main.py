@@ -89,7 +89,7 @@ def atMostOne_range(f, startNumber, endNumber):
 # -------------- Main -----------------
 
 
-filename = 'veasytest'
+filename = 'easy1'
 
 
 # vérifie si le fichier cnf correspondant au puzzle donné existe, s'il n'existe pas, le créer
@@ -108,7 +108,7 @@ with open(f"Puzzles/{filename}.json") as fin:
         grille = d["grid"]
         hauteur = len(grille)
         largeur = len(grille[0]) #part du principe que la grille est carrée
-        lettres_utilisees = ['A','B']
+        lettres_utilisees = ['A','B','C','D','E','F'] #mettre les lettres dans le fichier json du puzzle jpense
         nbLettres = (len(lettres_utilisees))
         
         for i in range(hauteur):
@@ -116,6 +116,8 @@ with open(f"Puzzles/{filename}.json") as fin:
                 count_before = variableCount
                 for lettre in lettres_utilisees:
                     if(check_letter(headers,i,j,lettre)!='.'):
+                        fout.write(f"{variableCount} 0\n")
+                    elif grille[i][j] == lettre: #si une lettre existe déja sur la grille on l'indique dans le cnf
                         fout.write(f"{variableCount} 0\n")
                     variableCount+=1
                 count_after = variableCount
@@ -147,7 +149,7 @@ with open(f"Puzzles/{filename}.json") as fin:
                         atMostOne(fout,x,y)
             
 
-
+#resoudre le puzzle avec le solver
 res = CNF(from_file=f"DIMACS/{filename}.cnf")
 solver = Glucose3(bootstrap_with=res)
             
