@@ -18,6 +18,6 @@ with open(f"Puzzles/{filename}.json") as fin:
         for j in range(largeur):
             for k in range(nbLettres):
                 if modele[variableCount-1] >0:
-                    print(lettres_utilisees[k],end='')
+                    print(lettres_utilisees[k],end='|')
                 variableCount+=1
         print('')
