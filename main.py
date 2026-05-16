@@ -1,3 +1,5 @@
-from Functions.helpers import var_index
+from Functions.steps import resoudrePuzzle
 
-print("hello world")
+resoudrePuzzle("easy_base",variant=0)
+resoudrePuzzle("easy_var_1",variant=1)
+resoudrePuzzle("easy_var_2",variant=2)
