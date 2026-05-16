@@ -62,37 +62,26 @@ def genererDIMACS(filename, variant=0):
         # ====================================================
 
         variableCount = 1
-        if nb_empties >= 1:
-            for i in range(n):
-                for j in range(n):
-                    # Récupérer les indices de variables pour TOUS les états de la case (i,j)
-                    case_vars = [var_index(i, j, l, n, nb_states) for l in range(nb_states)]
+   
+        for i in range(n):
 
-                    atLeastOne_list(f, case_vars)
-                    atMostOne_list(f, case_vars)
+            for j in range(n):
 
-                    # Mise à jour propre du compteur de clauses
-                    clause_count += 1 + (len(case_vars) * (len(case_vars) - 1)) // 2
-        else :
-            for i in range(n):
+                start = variableCount
 
-                for j in range(n):
+                for l in range(nb_states):
 
-                    start = variableCount
+                    variableCount += 1
 
-                    for l in range(nb_states):
+                end = variableCount
 
-                        variableCount += 1
+                atLeastOne(f, start, end)
 
-                    end = variableCount
+                atMostOne_range(f, start, end)
 
-                    atLeastOne(f, start, end)
+                clause_count += 1
 
-                    atMostOne_range(f, start, end)
-
-                    clause_count += 1
-
-                    clause_count += ((end - start) * ((end - start) - 1)) // 2
+                clause_count += ((end - start) * ((end - start) - 1)) // 2
 
         # ====================================================
         # AU PLUS UNE FOIS PAR LIGNE
