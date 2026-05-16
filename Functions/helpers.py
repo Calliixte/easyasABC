@@ -111,7 +111,15 @@ def atLeastOne_list(f, var_list):
 
     f.write("0\n")
 
-
+def atLeastTwo_list(f, var_list):
+    n = len(var_list)
+    # Pour chaque élément i, on crée une clause contenant tous les AUTRES éléments
+    for i in range(n):
+        for j in range(n):
+            if j != i:
+                f.write(f"{var_list[j]} ")
+        f.write("0\n")
+        
 def atMostOne_list(f, var_list):
 
     for i in range(len(var_list)):
@@ -130,27 +138,12 @@ def exactlyOne(clauses, var_list):
     atMostOne_list(clauses, var_list)
 
 
-# regarde la premeier lettre visible a place (si il y a des cases vide)
 def placePremiereVisible(f, cases_dans_ordre, lk, nbLettres, n, nb_states, EMPTY_IDX):
 
+    # Si la lettre est à la position k, toutes les cases avant DOIVENT être vides
     for k in range(len(cases_dans_ordre)):
-
         i, j = cases_dans_ordre[k]
-
-        for l_prime in range(nbLettres):
-
-            if l_prime == lk:
-                continue
-
-            # mauvaise lettre
-            f.write(f"-{var_index(i,j,l_prime,n,nb_states)} ")
-
-            # cases avant vides
-            for previous in range(k):
-
-                i_av, j_av = cases_dans_ordre[previous]
-
-                f.write(f"-{var_index(i_av,j_av,EMPTY_IDX,n,nb_states)} ")
-
-            f.write("0\n")
-
+        
+        for previous in range(k):
+            i_av, j_av = cases_dans_ordre[previous]
+            f.write(f"-{var_index(i, j, lk, n, nb_states)} {var_index(i_av, j_av, EMPTY_IDX, n, nb_states)} 0\n")

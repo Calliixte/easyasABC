@@ -11,6 +11,7 @@ from Functions.helpers import (
     atMostOne_list,
     exactlyOne,
     placePremiereVisible,
+    atLeastTwo_list,
 )
 
 """
@@ -19,7 +20,10 @@ Fonction qui récupère une entrée définissant une instance du puzzle, et qui 
 
 
 def genererDIMACS(filename, variant=0):
-
+    alphabet_complet = [
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+    ]
     with open(f"Puzzles/{filename}.json") as fin:
 
         puzzle_data = json.load(fin)
@@ -27,17 +31,17 @@ def genererDIMACS(filename, variant=0):
     headers = puzzle_data["headers"]
 
     grille = puzzle_data["grid"]
-
-    letters = puzzle_data.get("letters", ["A", "B", "C", "D", "E", "F"])
+    
 
     n = len(grille)
-
+    nb_lettres_necessaires = n - variant
+    letters = alphabet_complet[:nb_lettres_necessaires]
     has_empty = variant > 0
 
     nb_empties = variant
 
     EMPTY_IDX = len(letters)
-
+    
     nb_states = len(letters)
 
     if has_empty:
@@ -58,26 +62,37 @@ def genererDIMACS(filename, variant=0):
         # ====================================================
 
         variableCount = 1
+        if nb_empties >= 1:
+            for i in range(n):
+                for j in range(n):
+                    # Récupérer les indices de variables pour TOUS les états de la case (i,j)
+                    case_vars = [var_index(i, j, l, n, nb_states) for l in range(nb_states)]
 
-        for i in range(n):
+                    atLeastOne_list(f, case_vars)
+                    atMostOne_list(f, case_vars)
 
-            for j in range(n):
+                    # Mise à jour propre du compteur de clauses
+                    clause_count += 1 + (len(case_vars) * (len(case_vars) - 1)) // 2
+        else :
+            for i in range(n):
 
-                start = variableCount
+                for j in range(n):
 
-                for l in range(nb_states):
+                    start = variableCount
 
-                    variableCount += 1
+                    for l in range(nb_states):
 
-                end = variableCount
+                        variableCount += 1
 
-                atLeastOne(f, start, end)
+                    end = variableCount
 
-                atMostOne_range(f, start, end)
+                    atLeastOne(f, start, end)
 
-                clause_count += 1
+                    atMostOne_range(f, start, end)
 
-                clause_count += ((end - start) * ((end - start) - 1)) // 2
+                    clause_count += 1
+
+                    clause_count += ((end - start) * ((end - start) - 1)) // 2
 
         # ====================================================
         # AU PLUS UNE FOIS PAR LIGNE
@@ -154,11 +169,53 @@ def genererDIMACS(filename, variant=0):
         # ====================================================
         # CONTRAINTES CASES VIDES
         # ====================================================
-
+    # ==============================
+    # AU MOINS nb_empties par ligne
+    # ==============================
         if has_empty:
 
+        # ====================================================
+        # AU MOINS UNE FOIS PAR LIGNE (ou deux si deux cases vides)
+        # ====================================================
+
+            for i in range(n):
+                empty_vars = []
+                for j in range(n):
+
+                    empty_vars.append(var_index(i, j, EMPTY_IDX, n, nb_states))
+
+                if nb_empties == 1:
+                    # au moins 1 vide
+                    atLeastOne_list(f, empty_vars)
+                    clause_count += 1
+
+                elif nb_empties == 2:
+
+                    # au moins 2 vides
+                    atLeastTwo_list(f, empty_vars)
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
+
+        # ====================================================
+        # AU MOINS UNE FOIS PAR COLONES (ou deux si deux cases vides)
+        # ====================================================       
+            for j in range(n):
+                empty_vars = []
+                for i in range(n):
+
+                    empty_vars.append(var_index(i, j, EMPTY_IDX, n, nb_states))
+
+                if nb_empties == 1:
+                    # au moins 1 vide
+                    atLeastOne_list(f, empty_vars)
+                    clause_count += 1
+
+                elif nb_empties == 2:
+
+                    # au moins 2 vides
+                    atLeastTwo_list(f, empty_vars)
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
             # ------------------------------------------------
-            # LIGNES
+            # AU PLUS UNE FOIS LIGNES (ou deux si deux cases vide)
             # ------------------------------------------------
 
             for i in range(n):
@@ -171,16 +228,8 @@ def genererDIMACS(filename, variant=0):
 
                 # variante 1
                 if nb_empties == 1:
+                    atMostOne_list(f, empty_vars)
 
-                    for a in range(len(empty_vars)):
-
-                        for b in range(a + 1, len(empty_vars)):
-
-                            f.write(f"-{empty_vars[a]} ")
-
-                            f.write(f"-{empty_vars[b]} 0\n")
-
-                            clause_count += 1
 
                 # variante 2
                 elif nb_empties == 2:
@@ -200,7 +249,7 @@ def genererDIMACS(filename, variant=0):
                                 clause_count += 1
 
             # ------------------------------------------------
-            # COLONNES
+            # AU PLUS UNE FOIS COLONNES (ou deux si deux cases vide)
             # ------------------------------------------------
 
             for j in range(n):
@@ -213,16 +262,7 @@ def genererDIMACS(filename, variant=0):
 
                 # variante 1
                 if nb_empties == 1:
-
-                    for a in range(len(empty_vars)):
-
-                        for b in range(a + 1, len(empty_vars)):
-
-                            f.write(f"-{empty_vars[a]} ")
-
-                            f.write(f"-{empty_vars[b]} 0\n")
-
-                            clause_count += 1
+                    atMostOne_list(f, empty_vars)
 
                 # variante 2
                 elif nb_empties == 2:
