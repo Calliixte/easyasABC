@@ -2,7 +2,7 @@ from pysat.solvers import Glucose3
 from pysat.formula import CNF
 import json
 
-from helpers import var_index, atLeastOne, atMostOne, atMostOne_range, atLeastOne_list, atMostOne_list, exactlyOne, placePremiereVisible
+from Functions.helpers import var_index, atLeastOne, atMostOne, atMostOne_range, atLeastOne_list, atMostOne_list, exactlyOne, placePremiereVisible
 
 """
 Fonction qui récupère une entrée définissant une instance du puzzle, et qui crée un fichier DIMACS représentant l'instance
