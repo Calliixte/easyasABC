@@ -644,3 +644,6 @@ except:
 
 firstPass = True
 variableCount = 1  # init a 1 pour le solver
+ 
+
+print("test")
