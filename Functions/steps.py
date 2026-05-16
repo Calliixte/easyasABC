@@ -2,11 +2,22 @@ from pysat.solvers import Glucose3
 from pysat.formula import CNF
 import json
 
-from Functions.helpers import var_index, atLeastOne, atMostOne, atMostOne_range, atLeastOne_list, atMostOne_list, exactlyOne, placePremiereVisible
+from Functions.helpers import (
+    var_index,
+    atLeastOne,
+    atMostOne,
+    atMostOne_range,
+    atLeastOne_list,
+    atMostOne_list,
+    exactlyOne,
+    placePremiereVisible,
+)
 
 """
 Fonction qui récupère une entrée définissant une instance du puzzle, et qui crée un fichier DIMACS représentant l'instance
 """
+
+
 def genererDIMACS(filename, variant=0):
 
     with open(f"Puzzles/{filename}.json") as fin:
@@ -388,9 +399,12 @@ def genererDIMACS(filename, variant=0):
 
     return n, letters, nb_states, EMPTY_IDX, puzzle_data
 
+
 """
 Fonction qui, à partir de la trace produite par le SAT solveur (glucose), affiche la solution du problème, à savoir la grille remplie
 """
+
+
 def afficherSolution(model, n, letters, nb_states, EMPTY_IDX, headers, has_empty):
 
     model_set = set(model)
@@ -448,6 +462,8 @@ def afficherSolution(model, n, letters, nb_states, EMPTY_IDX, headers, has_empty
 """
 Fonction enchaînant automatiquement les etapes de création d'un fichier DIMACS et d'affichage de la solution ainsi que l’appel au SAT solveur 
 """
+
+
 def resoudrePuzzle(filename, variant=0):
 
     n, letters, nb_states, EMPTY_IDX, puzzle_data = genererDIMACS(filename, variant)
@@ -476,3 +492,51 @@ def resoudrePuzzle(filename, variant=0):
 
         return None, None, n, letters, nb_states, EMPTY_IDX, puzzle_data
 
+"""
+Fonction qui donne éventuellement une deuxième solution si elle existe
+"""
+def trouverDeuxiemeSolution(
+    solver, model, n, letters, nb_states, EMPTY_IDX, puzzle_data, filename, variant=0
+):
+    filename2 = f"{filename}_sol2" #definition d'un dimacs séparé pour la 2ème solution afin de pouvoir recuperer les deux si besoin
+
+    with open(f"DIMACS/{filename}.cnf", "r") as f:
+        contenu = f.readlines() #copie du fichier de la sol 1
+
+    
+    header = contenu[0].split()
+    nb_vars = int(header[2])
+    clause_count = int(header[3])
+
+    #création de la négation de la solution 1
+    parties = []
+    for lit in model:
+        if lit > 0:
+            parties.append(str(-lit))
+    parties.append("0")
+    negation_clause = " ".join(parties) + "\n"
+    clause_count += 1
+
+    # maj entete en raison de la nouvelle clause
+    contenu[0] = f"p cnf {nb_vars} {clause_count}\n"
+    contenu.append(negation_clause) #ajout de la nouvelle clause (négation) au bout du fichier
+
+    with open(f"DIMACS/{filename2}.cnf", "w") as f:
+        f.writelines(contenu)
+
+    print(f"[3] DIMACS deuxième solution généré")
+
+    # résolution avec le solver du dimacs nouvellement généré
+    formula2 = CNF(from_file=f"DIMACS/{filename2}.cnf")
+    solver2 = Glucose3(bootstrap_with=formula2)
+
+    if solver2.solve():
+        print("[4] Deuxième solution trouvée :")
+        model2 = solver2.get_model()
+        afficherSolution(
+            model2, n, letters, nb_states, EMPTY_IDX, puzzle_data["headers"], variant > 0
+        )
+    else:
+        print("[4] La solution est unique (UNSAT après négation)")
+
+    solver2.delete()
