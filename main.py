@@ -156,22 +156,9 @@ def placePremiereVisible(f, cases_dans_ordre, lk, nbLettres, n, nb_states, EMPTY
             f.write("0\n")
 
 
-# -------------- Main -----------------
-
-
-filename = "easy1"
-
-
-# vérifie si le fichier cnf correspondant au puzzle donné existe, s'il n'existe pas, le créer
-try:
-    open(f"DIMACS/{filename}.cnf")
-except:
-    open(f"DIMACS/{filename}.cnf", "x")
-
-firstPass = True
-variableCount = 1  # init a 1 pour le solver
-
-
+"""
+Fonction qui récupère une entrée définissant une instance du puzzle, et qui crée un fichier DIMACS représentant l'instance
+"""
 def genererDIMACS(filename, variant=0):
 
     with open(f"Puzzles/{filename}.json") as fin:
@@ -553,10 +540,9 @@ def genererDIMACS(filename, variant=0):
 
     return n, letters, nb_states, EMPTY_IDX, puzzle_data
 
-
-# AFFICHAGE SOLUTION
-
-
+"""
+Fonction qui, à partir de la trace produite par le SAT solveur (glucose), affiche la solution du problème, à savoir la grille remplie
+"""
 def afficherSolution(model, n, letters, nb_states, EMPTY_IDX, headers, has_empty):
 
     model_set = set(model)
@@ -611,9 +597,9 @@ def afficherSolution(model, n, letters, nb_states, EMPTY_IDX, headers, has_empty
     print()
 
 
-# RESOLUTION
-
-
+"""
+Fonction enchaînant automatiquement les etapes de création d'un fichier DIMACS et d'affichage de la solution ainsi que l’appel au SAT solveur 
+"""
 def resoudrePuzzle(filename, variant=0):
 
     n, letters, nb_states, EMPTY_IDX, puzzle_data = genererDIMACS(filename, variant)
@@ -641,3 +627,20 @@ def resoudrePuzzle(filename, variant=0):
         solver.delete()
 
         return None, None, n, letters, nb_states, EMPTY_IDX, puzzle_data
+
+
+
+# -------------- Main -----------------
+
+
+filename = "easy1"
+
+
+# vérifie si le fichier cnf correspondant au puzzle donné existe, s'il n'existe pas, le créer
+try:
+    open(f"DIMACS/{filename}.cnf")
+except:
+    open(f"DIMACS/{filename}.cnf", "x")
+
+firstPass = True
+variableCount = 1  # init a 1 pour le solver
