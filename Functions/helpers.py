@@ -1,13 +1,13 @@
 from pysat.solvers import Glucose3
 from pysat.formula import CNF
 import json
-
+# i,j coordonnées de la case, l indice de la lettre, n taille de la grille, nb_lettre nombre de lettres différentes
 def var_index(i, j, l, n, nb_lettre):
     return 1 + (i * n + j) * nb_lettre + l
 
 
 def check_letter(
-    headers, i, j, lettre
+    headers, i, j, lettre,grille
 ):  # verifie si lettre est en i,j selon les headers
     # on part du principe que les grilles données sont valides, sinon il faudrait vérifier une contradiction possible au niveau des lettres données (par exemple un coin ou on aurait A a gauche et B au dessus)
     headers_to_check = {}
@@ -40,7 +40,7 @@ def check_letter(
     return "."
 
 
-def check_any_letter(headers, i, j):  # verifie si une lettre est plaçable en i,j
+def check_any_letter(headers, i, j,grille):  # verifie si une lettre est plaçable en i,j
     # on part du principe que les grilles données sont valides, sinon il faudrait vérifier une contradiction possible au niveau des lettres données (par exemple un coin ou on aurait A a gauche et B au dessus)
     headers_to_check = {}
     if i == 0:
@@ -74,8 +74,8 @@ def check_any_letter(headers, i, j):  # verifie si une lettre est plaçable en i
 
 # essaye de placer une lettre en i,j en fonction de headers donnés
 # renvoie true si une lettre a été placée
-def place_letter(headers, i, j):
-    lettre = check_any_letter(headers, i, j)
+def place_letter(headers, i, j,grille):
+    lettre = check_any_letter(headers, i, j,grille)
     if lettre != ".":
         print(lettre, end="")
         return True

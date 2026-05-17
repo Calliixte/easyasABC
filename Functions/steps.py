@@ -176,7 +176,7 @@ def genererDIMACS(filename, variant=0):
                 if nb_empties == 1:
                     # au moins 1 vide
                     atLeastOne_list(f, empty_vars)
-                    clause_count += 1
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
 
                 elif nb_empties == 2:
 
@@ -196,7 +196,7 @@ def genererDIMACS(filename, variant=0):
                 if nb_empties == 1:
                     # au moins 1 vide
                     atLeastOne_list(f, empty_vars)
-                    clause_count += 1
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
 
                 elif nb_empties == 2:
 
@@ -218,7 +218,7 @@ def genererDIMACS(filename, variant=0):
                 # variante 1
                 if nb_empties == 1:
                     atMostOne_list(f, empty_vars)
-
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
 
                 # variante 2
                 elif nb_empties == 2:
@@ -252,6 +252,7 @@ def genererDIMACS(filename, variant=0):
                 # variante 1
                 if nb_empties == 1:
                     atMostOne_list(f, empty_vars)
+                    clause_count += len(empty_vars) + len(empty_vars) * (len(empty_vars) - 1)
 
                 # variante 2
                 elif nb_empties == 2:

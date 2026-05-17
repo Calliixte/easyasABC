@@ -1,2 +1,3 @@
 .venv/
 Functions/__pycache__
+DIMACS/*

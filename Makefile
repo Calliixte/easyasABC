@@ -15,6 +15,7 @@ $(VENV)/bin/activate:
 install: $(VENV)/bin/activate ## Crée le venv et installe les dépendances
 	$(VENV_PIP) install --upgrade pip
 	$(VENV_PIP) install python-sat
+	$(VENV_PIP) install pytest
 
 # lancement main 
 
@@ -22,7 +23,10 @@ install: $(VENV)/bin/activate ## Crée le venv et installe les dépendances
 run: install 
 	$(VENV_PY) main.py
 
-# TODO : add lancement tests
+# lancement des tests
+.PHONY: test
+test: install 
+	$(VENV_BIN)/pytest -q
 
 #delete cache
 .PHONY: clean
