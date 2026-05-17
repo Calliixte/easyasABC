@@ -16,10 +16,16 @@ from Functions.steps import *
 #]
 # solution puzzle2 :
 #[
-#   ["A",".","B","."],
-#   [".","B",".","A"],
-#   ["B",".","A","."],
-#   [".","A",".","B"]
+#      C A A . D B
+#  +-----------+
+# .|C . A . D B|B
+# D|D . . B A C|C
+# A|. A D C B .|.
+# C|. C B D . A|.
+# .|A B . . C D|D
+# .|B D C A . .|A
+#  +-----------+
+#   B . . . C D
 #]
 
 
@@ -55,10 +61,10 @@ def test_genererDIMACS_variant2():
     # Test avec test_puzzle0 (4x4)
     n, letters, nb_states, EMPTY_IDX, puzzle_data = genererDIMACS("test_puzzle2", variant=2)
     
-    assert n == 4, "test_puzzle2 doit être une grille 4x4"
-    assert letters == ['A','B'], "variant=2: doit avoir 2 lettres"
-    assert nb_states == 3, "nb_states doit être 3"
-    assert EMPTY_IDX == 2, "EMPTY_IDX doit être 2"
+    assert n == 6, "test_puzzle2 doit être une grille 6x6"
+    assert letters == ['A','B','C','D'], "variant=4: doit avoir 4 lettres"
+    assert nb_states == 5, "nb_states doit être 5"
+    assert EMPTY_IDX == 4, "EMPTY_IDX doit être 4"
     assert os.path.exists("DIMACS/test_puzzle2.cnf"), "Le fichier DIMACS doit être créé"
 
 
@@ -92,7 +98,6 @@ def test_resoudrePuzzle_variant0():
     
     # test_puzzle0 est un puzzle 3x3 avec 3 lettres (A, B, C) et aucune case vide, donc n=3, nb_states=3, EMPTY_IDX=3
     assert result is not None, "Le puzzle doit avoir une solution"
-    assert len(result) == 7, "resoudrePuzzle doit retourner 7 éléments"
     
     solver, model, n, letters, nb_states, EMPTY_IDX, puzzle_data = result
     
@@ -107,7 +112,6 @@ def test_resoudrePuzzle_variant1():
     result = resoudrePuzzle("test_puzzle1", variant=1)
     
     assert result is not None, "Le puzzle avec variant=1 doit avoir une solution"
-    assert len(result) == 7, "resoudrePuzzle doit retourner 7 éléments"
     solver, model, n, letters, nb_states, EMPTY_IDX, puzzle_data = result
     
     assert n == 3, "test_puzzle1 doit avoir n=3"
@@ -120,11 +124,10 @@ def test_resoudrePuzzle_variant2():
     result = resoudrePuzzle("test_puzzle2", variant=2)
     
     assert result is not None, "test_puzzle2 avec variant=2 doit avoir une solution"
-    assert len(result) == 7, "resoudrePuzzle doit retourner 7 éléments"
     solver, model, n, letters, nb_states, EMPTY_IDX, puzzle_data = result
     
-    assert n == 4, "test_puzzle2 doit avoir n=4"
-    assert letters == ['A', 'B'], "variant=2: doit avoir 2 lettres (A, B)"
+    assert n == 6, "test_puzzle2 doit avoir n=6"
+    assert letters == ['A', 'B','C','D'], "variant=2: doit avoir 2 lettres (A, B,C,D)"
     assert model is not None, "Le modèle doit exister"
 
 

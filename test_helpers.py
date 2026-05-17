@@ -4,12 +4,12 @@ from Functions.helpers import *
 
 ## Test de la fonction var_index qui calcule l'indice d'une variable pour une case donnée et une lettre donnée
 def test_var_index():
-    assert var_index(0, 0, 0, 3, 3) == 1
-    assert var_index(0, 0, 0, 3, 4) == 1
+    assert var_index(0, 0, 0, 3, 3) == 1 ,"L'indexe de la première lettre en 0,0 pour une grille 3x3 avec 3 lettres doit être 1 "
+    assert var_index(0, 0, 0, 3, 4) == 1 ,"L'indexe de la première lettre en 0,0 pour une grille 4x4 avec 3 lettres doit être 1 "
     #case lettre si case empty dans la grille
-    assert var_index(1, 1, 1, 3, 4) == 18
+    assert var_index(1, 1, 1, 3, 4) == 18,"L'indexe de la deuxième lettre en 1,1 pour une grille 4x4 avec 3 lettres doit être 18 "
     # case empty
-    assert var_index(1, 1, 4, 3, 4) == 21
+    assert var_index(1, 1, 4, 3, 4) == 21,"L'indexe de la case vide en 1,1 pour une grille 4x4 avec 3 lettres doit être 21 "
 
 
 def test_check_letter_and_any_and_place():
